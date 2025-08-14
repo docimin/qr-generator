@@ -29,6 +29,8 @@ export type GenerateClientOptions = {
 // - call your server endpoint, or
 // - import the Node entry in server components or API routes.
 
+export const DEFAULT_API_URL = 'https://qr-generator.dev/api/qrcode'
+
 export function buildApiUrl(
   baseUrl: string,
   params: Record<string, string>
@@ -38,7 +40,7 @@ export function buildApiUrl(
 }
 
 export async function fetchQrcodeFromApi(
-  baseUrl: string = 'https://qr-generator.dev/api/qrcode',
+  baseUrlOrUndefined: string | undefined,
   options: GenerateClientOptions
 ): Promise<{ kind: 'blob'; data: string }> {
   const {
@@ -74,7 +76,8 @@ export async function fetchQrcodeFromApi(
   if (overlayRadius !== undefined) params.overlayRadius = String(overlayRadius)
   if (overlayScale !== undefined) params.overlayScale = String(overlayScale)
 
-  const url = buildApiUrl(baseUrl, params)
+  const resolvedBase = (baseUrlOrUndefined ?? '').trim() || DEFAULT_API_URL;
+  const url = buildApiUrl(resolvedBase, params)
   const res = await fetch(url)
   if (!res.ok) {
     try {

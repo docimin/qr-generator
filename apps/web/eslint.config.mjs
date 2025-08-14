@@ -175,4 +175,3 @@ export default [
   },
   prettierConfig, // Must be last to override conflicting rules
 ]
-

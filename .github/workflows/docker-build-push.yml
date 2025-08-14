@@ -1,0 +1,69 @@
+name: Build and Push Docker Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "App to build and push"
+        required: true
+        type: choice
+        options:
+          - web
+
+jobs:
+  set-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [ "${{ github.event.inputs.app }}" = "all" ]; then
+            echo 'matrix=["web"]' >> $GITHUB_OUTPUT
+          else
+            echo 'matrix=["${{ github.event.inputs.app }}"]' >> $GITHUB_OUTPUT
+          fi
+
+  build-and-push:
+    needs: set-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.set-matrix.outputs.matrix) }}
+    env:
+      REGISTRY: harbor.fayevr.dev
+      IMAGE_NAME: ${{ github.repository }}
+      TURBO_TEAM: qr-generator
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Extract version from package.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r .version apps/${{ matrix.app }}/package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Log in to Harbor Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build \
+          --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
+          -t ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:${{ steps.get_version.outputs.version }} \
+          -t ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:latest \
+          -f apps/${{ matrix.app }}/Dockerfile .
+          docker push ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:${{ steps.get_version.outputs.version }}
+          docker push ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:latest

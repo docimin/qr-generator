@@ -9,15 +9,13 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "bun run dev --filter=apps/web",
-    "build": "bun run build:web && bun run build:package",
-    "build:web": "bun run build --filter=apps/web",
-    "build:package": "bun run build --filter=@qr-generator/qr-code",
-    "build:web:direct": "cd apps/web && pnpm run build",
-    "build:package:direct": "cd apps/packages/qr-code && pnpm run build",
-    "lint": "bun run lint --filter=apps/web && bun run lint --filter=@qr-generator/qr-code",
-    "lint:fix": "bun run lint:fix --filter=apps/web && bun run lint:fix --filter=@qr-generator/qr-code",
-    "format": "bun run format --filter=apps/web && bun run format --filter=@qr-generator/qr-code",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "build:web": "turbo build --filter=apps/web",
+    "build:package": "turbo build --filter=@qr-generator/qr-code",
+    "lint": "cd apps/web && bun run lint && cd ../packages/qr-code && bun run lint",
+    "lint:fix": "cd apps/web && bun run lint:fix && cd ../packages/qr-code && bun run lint:fix",
+    "format": "turbo format",
     "clean": "rm -rf node_modules apps/*/node_modules apps/*/packages/*/dist"
   },
   "devDependencies": {

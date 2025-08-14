@@ -6,7 +6,7 @@ export function buildApiUrl(baseUrl, params) {
     const usp = new URLSearchParams(params);
     return `${baseUrl}?${usp.toString()}`;
 }
-export async function fetchQrcodeFromApi(baseUrl, options) {
+export async function fetchQrcodeFromApi(baseUrl = 'https://qr-generator.dev/api/qrcode', options) {
     const { value, size, margin, errorCorrectionLevel, colorMode, foregroundColor, backgroundColor, gradientStart, gradientEnd, gradientDirection, centerImageUrl, overlayBackground, overlayRadius, overlayScale, format = 'png', } = options;
     const params = { value, format };
     if (size)

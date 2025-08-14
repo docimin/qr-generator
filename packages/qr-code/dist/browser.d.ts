@@ -16,11 +16,10 @@ export type GenerateClientOptions = {
     overlayBackground?: string;
     overlayRadius?: number;
     overlayScale?: number;
+    format?: 'png' | 'blob';
 };
 export declare function buildApiUrl(baseUrl: string, params: Record<string, string>): string;
-export declare function fetchQrcodeFromApi(baseUrl: string, options: GenerateClientOptions & {
-    format?: 'png' | 'blob';
-}): Promise<{
+export declare function fetchQrcodeFromApi(baseUrl: string | undefined, options: GenerateClientOptions): Promise<{
     kind: 'blob';
     data: string;
 }>;
