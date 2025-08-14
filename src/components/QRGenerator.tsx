@@ -10,7 +10,6 @@ import {
   User,
   X,
 } from 'lucide-react'
-import QRCode from 'qrcode'
 import { useMemo, useRef, useState } from 'react'
 
 import QRCodeCanvas, { QRCodeCanvasRef } from '@/components/QRCodeCanvas'
@@ -127,7 +126,6 @@ export default function QRGenerator() {
 
   const qrCanvasRef = useRef<QRCodeCanvasRef | null>(null)
   const [canvasSize, setCanvasSize] = useState(CANVAS_SIZE)
-  const [downloadOpen, setDownloadOpen] = useState(false)
 
   const content = useMemo(() => {
     if (qrType === 'text') return textData.trim()
@@ -213,9 +211,9 @@ export default function QRGenerator() {
     setCenterImage(file)
   }
 
-  const handleDownload = async (format: 'png' | 'svg') => {
-    setDownloadOpen(false)
-    if (format === 'png') {
+  const handleDownload = async () => {
+    // If a local center image is used, the API can't access it. Fallback to client render.
+    if (centerImage) {
       const canvas = qrCanvasRef.current
       if (!canvas) return
       const link = document.createElement('a')
@@ -226,26 +224,63 @@ export default function QRGenerator() {
       document.body.removeChild(link)
       return
     }
-    // SVG (solid colors only)
-    const svg = await QRCode.toString(content, {
-      type: 'svg',
-      width: canvasSize,
-      margin: 2,
-      errorCorrectionLevel: 'H',
-      color: {
-        dark: effectiveColors.dark,
-        light: effectiveColors.light,
-      },
-    })
-    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.download = 'qr-code.svg'
-    link.href = url
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+
+    // Otherwise, use the server API for parity with server rendering (gradients, etc.)
+    try {
+      const params = new URLSearchParams()
+      params.set('value', content)
+      params.set('size', String(canvasSize))
+      params.set('margin', '2')
+      params.set('errorCorrectionLevel', 'H')
+      params.set('format', 'png')
+
+      const mode = isGradientActive ? 'gradient' : 'solid'
+      params.set('colorMode', mode)
+
+      // background always sent
+      params.set('backgroundColor', effectiveColors.light)
+
+      if (mode === 'gradient') {
+        params.set('gradientStart', gradientStart)
+        params.set('gradientEnd', gradientEnd)
+        params.set('gradientDirection', gradientDirection)
+      } else {
+        params.set('foregroundColor', effectiveColors.dark)
+      }
+
+      const res = await fetch(`/api/qrcode?${params.toString()}`)
+      if (!res.ok) {
+        // On error, fallback to client render
+        const canvas = qrCanvasRef.current
+        if (!canvas) return
+        const link = document.createElement('a')
+        link.download = 'qr-code.png'
+        link.href = canvas.toDataURL('image/png')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'qr-code.png'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch {
+      // Fallback to client render on any failure
+      const canvas = qrCanvasRef.current
+      if (!canvas) return
+      const link = document.createElement('a')
+      link.download = 'qr-code.png'
+      link.href = canvas.toDataURL('image/png')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
   }
 
   return (
@@ -264,6 +299,190 @@ export default function QRGenerator() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>QR Code Content</CardTitle>
+              <CardDescription>
+                Choose what type of content your QR code should contain
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs
+                value={qrType}
+                onValueChange={(v) => setQrType(v as QrType)}
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="text" className="flex items-center gap-1">
+                    <Type className="h-4 w-4" />
+                    Text
+                  </TabsTrigger>
+                  <TabsTrigger value="url" className="flex items-center gap-1">
+                    <Link className="h-4 w-4" />
+                    URL
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="email"
+                    className="flex items-center gap-1"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="contact"
+                    className="flex items-center gap-1"
+                  >
+                    <User className="h-4 w-4" />
+                    Contact
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="text" className="space-y-4 mt-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="text-content">Text Content</Label>
+                    <Textarea
+                      id="text-content"
+                      placeholder="Enter any text you want to encode in the QR code..."
+                      value={textData}
+                      onChange={(e) => setTextData(e.target.value)}
+                      rows={4}
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="url" className="space-y-4 mt-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="url-input">Website URL</Label>
+                    <Input
+                      id="url-input"
+                      type="url"
+                      placeholder="https://example.com"
+                      value={urlData}
+                      onChange={(e) => setUrlData(e.target.value)}
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="email" className="space-y-4 mt-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="email-address">Email Address</Label>
+                    <Input
+                      id="email-address"
+                      type="email"
+                      placeholder="recipient@example.com"
+                      value={emailData.email}
+                      onChange={(e) =>
+                        setEmailData({ ...emailData, email: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email-subject">Subject (Optional)</Label>
+                    <Input
+                      id="email-subject"
+                      placeholder="Email subject"
+                      value={emailData.subject}
+                      onChange={(e) =>
+                        setEmailData({ ...emailData, subject: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email-body">Message (Optional)</Label>
+                    <Textarea
+                      id="email-body"
+                      placeholder="Email message..."
+                      value={emailData.body}
+                      onChange={(e) =>
+                        setEmailData({ ...emailData, body: e.target.value })
+                      }
+                      rows={3}
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="contact" className="space-y-4 mt-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="first-name">First Name</Label>
+                      <Input
+                        id="first-name"
+                        placeholder="John"
+                        value={contactData.firstName}
+                        onChange={(e) =>
+                          setContactData({
+                            ...contactData,
+                            firstName: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="last-name">Last Name</Label>
+                      <Input
+                        id="last-name"
+                        placeholder="Doe"
+                        value={contactData.lastName}
+                        onChange={(e) =>
+                          setContactData({
+                            ...contactData,
+                            lastName: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-phone">Phone Number</Label>
+                    <Input
+                      id="contact-phone"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      value={contactData.phone}
+                      onChange={(e) =>
+                        setContactData({
+                          ...contactData,
+                          phone: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-email">Email Address</Label>
+                    <Input
+                      id="contact-email"
+                      type="email"
+                      placeholder="john.doe@example.com"
+                      value={contactData.email}
+                      onChange={(e) =>
+                        setContactData({
+                          ...contactData,
+                          email: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="organization">
+                      Organization (Optional)
+                    </Label>
+                    <Input
+                      id="organization"
+                      placeholder="Company Name"
+                      value={contactData.organization}
+                      onChange={(e) =>
+                        setContactData({
+                          ...contactData,
+                          organization: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
           <Card className="lg:sticky lg:top-4">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -554,210 +773,13 @@ export default function QRGenerator() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setDownloadOpen((o) => !o)}
+                  onClick={() => {
+                    void handleDownload()
+                  }}
                 >
                   <Download className="h-4 w-4" />
                 </Button>
-                {downloadOpen && (
-                  <Select
-                    onValueChange={(v) =>
-                      void handleDownload(v as 'png' | 'svg')
-                    }
-                  >
-                    <SelectTrigger className="h-8 w-[140px]">
-                      <SelectValue placeholder="Select format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="png">PNG</SelectItem>
-                      <SelectItem value="svg">SVG</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>QR Code Content</CardTitle>
-              <CardDescription>
-                Choose what type of content your QR code should contain
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                value={qrType}
-                onValueChange={(v) => setQrType(v as QrType)}
-                className="w-full"
-              >
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="text" className="flex items-center gap-1">
-                    <Type className="h-4 w-4" />
-                    Text
-                  </TabsTrigger>
-                  <TabsTrigger value="url" className="flex items-center gap-1">
-                    <Link className="h-4 w-4" />
-                    URL
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="email"
-                    className="flex items-center gap-1"
-                  >
-                    <Mail className="h-4 w-4" />
-                    Email
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="contact"
-                    className="flex items-center gap-1"
-                  >
-                    <User className="h-4 w-4" />
-                    Contact
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="text" className="space-y-4 mt-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="text-content">Text Content</Label>
-                    <Textarea
-                      id="text-content"
-                      placeholder="Enter any text you want to encode in the QR code..."
-                      value={textData}
-                      onChange={(e) => setTextData(e.target.value)}
-                      rows={4}
-                    />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="url" className="space-y-4 mt-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="url-input">Website URL</Label>
-                    <Input
-                      id="url-input"
-                      type="url"
-                      placeholder="https://example.com"
-                      value={urlData}
-                      onChange={(e) => setUrlData(e.target.value)}
-                    />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="email" className="space-y-4 mt-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="email-address">Email Address</Label>
-                    <Input
-                      id="email-address"
-                      type="email"
-                      placeholder="recipient@example.com"
-                      value={emailData.email}
-                      onChange={(e) =>
-                        setEmailData({ ...emailData, email: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email-subject">Subject (Optional)</Label>
-                    <Input
-                      id="email-subject"
-                      placeholder="Email subject"
-                      value={emailData.subject}
-                      onChange={(e) =>
-                        setEmailData({ ...emailData, subject: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email-body">Message (Optional)</Label>
-                    <Textarea
-                      id="email-body"
-                      placeholder="Email message..."
-                      value={emailData.body}
-                      onChange={(e) =>
-                        setEmailData({ ...emailData, body: e.target.value })
-                      }
-                      rows={3}
-                    />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="contact" className="space-y-4 mt-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="first-name">First Name</Label>
-                      <Input
-                        id="first-name"
-                        placeholder="John"
-                        value={contactData.firstName}
-                        onChange={(e) =>
-                          setContactData({
-                            ...contactData,
-                            firstName: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="last-name">Last Name</Label>
-                      <Input
-                        id="last-name"
-                        placeholder="Doe"
-                        value={contactData.lastName}
-                        onChange={(e) =>
-                          setContactData({
-                            ...contactData,
-                            lastName: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-phone">Phone Number</Label>
-                    <Input
-                      id="contact-phone"
-                      type="tel"
-                      placeholder="+1 (555) 123-4567"
-                      value={contactData.phone}
-                      onChange={(e) =>
-                        setContactData({
-                          ...contactData,
-                          phone: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-email">Email Address</Label>
-                    <Input
-                      id="contact-email"
-                      type="email"
-                      placeholder="john.doe@example.com"
-                      value={contactData.email}
-                      onChange={(e) =>
-                        setContactData({
-                          ...contactData,
-                          email: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization">
-                      Organization (Optional)
-                    </Label>
-                    <Input
-                      id="organization"
-                      placeholder="Company Name"
-                      value={contactData.organization}
-                      onChange={(e) =>
-                        setContactData({
-                          ...contactData,
-                          organization: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </TabsContent>
-              </Tabs>
             </CardContent>
           </Card>
         </div>
