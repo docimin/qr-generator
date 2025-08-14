@@ -1,11 +1,12 @@
-import js from '@eslint/js';
-import typescript from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import importPlugin from 'eslint-plugin-import';
-import prettier from 'eslint-config-prettier';
+import js from '@eslint/js'
+import typescript from '@typescript-eslint/eslint-plugin'
+import typescriptParser from '@typescript-eslint/parser'
+import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import importPlugin from 'eslint-plugin-import'
+import prettierConfig from 'eslint-config-prettier'
+import prettier from 'eslint-plugin-prettier'
 
 export default [
   {
@@ -13,40 +14,40 @@ export default [
       // Dependencies
       'node_modules/',
       '.pnpm/',
-      
+
       // Build outputs
       '.next/',
       'out/',
       'dist/',
       'build/',
-      
+
       // Environment files
       '.env*',
       '!.env.example',
-      
+
       // Logs
       '*.log',
       'npm-debug.log*',
       'yarn-debug.log*',
       'yarn-error.log*',
       'pnpm-debug.log*',
-      
+
       // Runtime data
       'pids',
       '*.pid',
       '*.seed',
       '*.pid.lock',
-      
+
       // Coverage directory
       'coverage/',
       '*.lcov',
       '.nyc_output',
-      
+
       // Cache directories
       '.eslintcache',
       '.cache',
       '.parcel-cache',
-      
+
       // Temporary folders
       'tmp/',
       'temp/',
@@ -73,6 +74,7 @@ export default [
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       import: importPlugin,
+      prettier,
     },
     rules: {
       // TypeScript specific rules
@@ -87,13 +89,24 @@ export default [
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/require-await': 'error',
+
+      // Prettier integration
       'prettier/prettier': 'error',
 
       // Import sorting - simplified to work with Prettier
       'import/order': [
         'error',
         {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type'],
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+            'object',
+            'type',
+          ],
           'newlines-between': 'always',
           alphabetize: {
             order: 'asc',
@@ -121,9 +134,9 @@ export default [
       'no-multiple-empty-lines': 'off', // Let Prettier handle this
       'eol-last': 'off', // Let Prettier handle this
       'comma-dangle': 'off', // Let Prettier handle this
-      'quotes': 'off', // Let Prettier handle this
-      'semi': 'off', // Let Prettier handle this
-      'indent': 'off', // Let Prettier handle this
+      quotes: 'off', // Let Prettier handle this
+      semi: 'off', // Let Prettier handle this
+      indent: 'off', // Let Prettier handle this
       'object-curly-spacing': 'off', // Let Prettier handle this
       'array-bracket-spacing': 'off', // Let Prettier handle this
       'comma-spacing': 'off', // Let Prettier handle this
@@ -135,8 +148,8 @@ export default [
       'arrow-spacing': 'off', // Let Prettier handle this
       'keyword-spacing': 'off', // Let Prettier handle this
       'brace-style': 'off', // Let Prettier handle this
-      'curly': 'off', // Let Prettier handle this
-      'eqeqeq': 'error',
+      curly: 'off', // Let Prettier handle this
+      eqeqeq: 'error',
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-func': 'error',
@@ -149,7 +162,7 @@ export default [
       'no-useless-return': 'error',
       'prefer-promise-reject-errors': 'error',
       'require-await': 'off',
-      'yoda': 'error',
+      yoda: 'error',
     },
   },
   {
@@ -160,5 +173,6 @@ export default [
       'no-unused-vars': 'off',
     },
   },
-  prettier, // Must be last to override conflicting rules
-];
+  prettierConfig, // Must be last to override conflicting rules
+]
+
