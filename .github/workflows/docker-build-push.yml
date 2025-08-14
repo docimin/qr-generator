@@ -61,7 +61,6 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build \
-          --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
           -t ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:${{ steps.get_version.outputs.version }} \
           -t ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:latest \
           -f apps/${{ matrix.app }}/Dockerfile .
