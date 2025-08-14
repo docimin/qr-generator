@@ -1,0 +1,26 @@
+{
+    "$schema": "https://turborepo.com/schema.json",
+    "remoteCache": {
+        "apiUrl": "https://cache-turbo.headpat.space",
+        "teamSlug": "qr-generator"
+    },
+    "tasks": {
+        "build": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                ".next/**",
+                "!.next/cache/**",
+                "dist/**"
+            ]
+        },
+        "check-types": {
+          "dependsOn": ["^check-types"]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "author": "Faye",
+    "dependencies": {
+        "qrcode": "^1.5.4",
+        "sharp": "^0.34.3"
+    },
+    "description": "Local QR code generator with gradients and center-image overlays (Node)",
+    "devDependencies": {
+        "typescript": "^5.9.2",
+        "@types/node": "^20.19.10"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/cjs/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./browser": {
+            "import": "./dist/browser.js",
+            "require": "./dist/cjs/browser.js",
+            "types": "./dist/browser.d.ts"
+        },
+        "./native": {
+            "import": "./dist/native.js",
+            "require": "./dist/cjs/native.js",
+            "types": "./dist/native.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "license": "MIT",
+    "main": "dist/cjs/index.js",
+    "module": "dist/index.js",
+    "name": "@qr-generator/qr-code",
+    "scripts": {
+        "build": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
+        "prepublishOnly": "npm run build"
+    },
+    "type": "module",
+    "types": "dist/index.d.ts",
+    "version": "0.1.0"
+}
