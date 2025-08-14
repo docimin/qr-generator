@@ -12,8 +12,10 @@ RUN turbo prune @apps/web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
-RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libc6 \
+    && rm -rf /var/lib/apt/lists/*
 RUN bun install -g turbo
 WORKDIR /app
 
