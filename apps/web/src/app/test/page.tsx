@@ -28,8 +28,8 @@ export default function TestPage() {
         format: 'png',
       })
       setImgSrc(res.data)
-    } catch (e: any) {
-      setError(e?.message ?? 'Failed to generate QR code')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to generate QR code')
     } finally {
       setLoading(false)
     }

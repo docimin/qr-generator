@@ -1,16 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DEFAULT_API_URL = void 0;
 exports.buildApiUrl = buildApiUrl;
 exports.fetchQrcodeFromApi = fetchQrcodeFromApi;
 // This file provides a thin client that defers to the server package or a hosted API.
 // In browsers/React/Next.js client components/React Native, you should:
 // - call your server endpoint, or
 // - import the Node entry in server components or API routes.
+exports.DEFAULT_API_URL = 'https://qr-generator.dev/api/qrcode';
 function buildApiUrl(baseUrl, params) {
     const usp = new URLSearchParams(params);
     return `${baseUrl}?${usp.toString()}`;
 }
-async function fetchQrcodeFromApi(baseUrl = 'https://qr-generator.dev/api/qrcode', options) {
+async function fetchQrcodeFromApi(baseUrlOrUndefined, options) {
     const { value, size, margin, errorCorrectionLevel, colorMode, foregroundColor, backgroundColor, gradientStart, gradientEnd, gradientDirection, centerImageUrl, overlayBackground, overlayRadius, overlayScale, format = 'png', } = options;
     const params = { value, format };
     if (size)
@@ -39,7 +41,8 @@ async function fetchQrcodeFromApi(baseUrl = 'https://qr-generator.dev/api/qrcode
         params.overlayRadius = String(overlayRadius);
     if (overlayScale !== undefined)
         params.overlayScale = String(overlayScale);
-    const url = buildApiUrl(baseUrl, params);
+    const resolvedBase = (baseUrlOrUndefined ?? '').trim() || exports.DEFAULT_API_URL;
+    const url = buildApiUrl(resolvedBase, params);
     const res = await fetch(url);
     if (!res.ok) {
         try {

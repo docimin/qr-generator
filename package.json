@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "build:web": "turbo build --filter=apps/web",
+    "build:web": "turbo build --filter=@apps/web",
     "build:package": "turbo build --filter=@qr-generator/qr-code",
     "lint": "cd apps/web && bun run lint && cd ../packages/qr-code && bun run lint",
     "lint:fix": "cd apps/web && bun run lint:fix && cd ../packages/qr-code && bun run lint:fix",

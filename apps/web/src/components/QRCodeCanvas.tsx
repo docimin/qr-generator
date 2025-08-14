@@ -92,7 +92,7 @@ async function drawCenterImage(
   overlayRadius: number,
   overlayScale: number
 ) {
-  const ctx = canvas.getContext('2d')
+  const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d')
   if (!ctx) return
   const img = new Image()
   await new Promise<void>((resolve, reject) => {
@@ -106,9 +106,9 @@ async function drawCenterImage(
   const y = Math.floor((size - overlaySize) / 2)
 
   // Rounded background
-  if ((ctx as any).roundRect) {
+  if (ctx.roundRect) {
     ctx.save()
-    ;(ctx as any).roundRect(x, y, overlaySize, overlaySize, overlayRadius)
+    ctx.roundRect(x, y, overlaySize, overlaySize, overlayRadius)
     ctx.fillStyle = overlayBackground
     ctx.fill()
     ctx.restore()

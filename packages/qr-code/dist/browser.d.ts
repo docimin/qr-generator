@@ -18,8 +18,9 @@ export type GenerateClientOptions = {
     overlayScale?: number;
     format?: 'png' | 'blob';
 };
+export declare const DEFAULT_API_URL = "https://qr-generator.dev/api/qrcode";
 export declare function buildApiUrl(baseUrl: string, params: Record<string, string>): string;
-export declare function fetchQrcodeFromApi(baseUrl: string | undefined, options: GenerateClientOptions): Promise<{
+export declare function fetchQrcodeFromApi(baseUrlOrUndefined: string | undefined, options: GenerateClientOptions): Promise<{
     kind: 'blob';
     data: string;
 }>;

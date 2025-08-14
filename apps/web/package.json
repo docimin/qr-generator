@@ -21,6 +21,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.33.0",
+    "@next/eslint-plugin-next": "^15.4.6",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/node": "^20.19.10",
     "@types/qrcode": "^1.5.5",
@@ -29,7 +30,6 @@
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
     "eslint": "^9.33.0",
-    "eslint-config-next": "15.4.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.2.3",

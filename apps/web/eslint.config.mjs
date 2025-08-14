@@ -7,6 +7,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import importPlugin from 'eslint-plugin-import'
 import prettierConfig from 'eslint-config-prettier'
 import prettier from 'eslint-plugin-prettier'
+import nextPlugin from '@next/eslint-plugin-next'
 
 export default [
   {
@@ -75,10 +76,11 @@ export default [
       'react-refresh': reactRefresh,
       import: importPlugin,
       prettier,
+      '@next/next': nextPlugin,
     },
     rules: {
       // TypeScript specific rules
-      '@typescript-eslint/no-explicit-any': 'warn', // Changed from error to warn
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -93,7 +95,7 @@ export default [
       // Prettier integration
       'prettier/prettier': 'error',
 
-      // Import sorting - simplified to work with Prettier
+      // Import sorting
       'import/order': [
         'error',
         {
@@ -123,7 +125,14 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
       'react-refresh/only-export-components': 'off',
 
-      // General code quality - relaxed for Prettier compatibility
+      // Next.js specific rules
+      '@next/next/no-html-link-for-pages': 'error',
+      '@next/next/no-img-element': 'warn',
+      '@next/next/no-sync-scripts': 'error',
+      '@next/next/no-unwanted-polyfillio': 'error',
+      '@next/next/no-page-custom-font': 'warn',
+
+      // General code quality
       'no-console': 'warn',
       'no-debugger': 'error',
       'no-alert': 'error',
@@ -131,24 +140,24 @@ export default [
       'prefer-const': 'error',
       'no-unused-expressions': 'error',
       'no-duplicate-imports': 'error',
-      'no-multiple-empty-lines': 'off', // Let Prettier handle this
-      'eol-last': 'off', // Let Prettier handle this
-      'comma-dangle': 'off', // Let Prettier handle this
-      quotes: 'off', // Let Prettier handle this
-      semi: 'off', // Let Prettier handle this
-      indent: 'off', // Let Prettier handle this
-      'object-curly-spacing': 'off', // Let Prettier handle this
-      'array-bracket-spacing': 'off', // Let Prettier handle this
-      'comma-spacing': 'off', // Let Prettier handle this
-      'key-spacing': 'off', // Let Prettier handle this
-      'space-before-blocks': 'off', // Let Prettier handle this
-      'space-before-function-paren': 'off', // Let Prettier handle this
-      'space-in-parens': 'off', // Let Prettier handle this
-      'space-infix-ops': 'off', // Let Prettier handle this
-      'arrow-spacing': 'off', // Let Prettier handle this
-      'keyword-spacing': 'off', // Let Prettier handle this
-      'brace-style': 'off', // Let Prettier handle this
-      curly: 'off', // Let Prettier handle this
+      'no-multiple-empty-lines': 'off',
+      'eol-last': 'off',
+      'comma-dangle': 'off',
+      quotes: 'off',
+      semi: 'off',
+      indent: 'off',
+      'object-curly-spacing': 'off',
+      'array-bracket-spacing': 'off',
+      'comma-spacing': 'off',
+      'key-spacing': 'off',
+      'space-before-blocks': 'off',
+      'space-before-function-paren': 'off',
+      'space-in-parens': 'off',
+      'space-infix-ops': 'off',
+      'arrow-spacing': 'off',
+      'keyword-spacing': 'off',
+      'brace-style': 'off',
+      curly: 'off',
       eqeqeq: 'error',
       'no-eval': 'error',
       'no-implied-eval': 'error',

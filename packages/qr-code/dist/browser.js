@@ -2,11 +2,12 @@
 // In browsers/React/Next.js client components/React Native, you should:
 // - call your server endpoint, or
 // - import the Node entry in server components or API routes.
+export const DEFAULT_API_URL = 'https://qr-generator.dev/api/qrcode';
 export function buildApiUrl(baseUrl, params) {
     const usp = new URLSearchParams(params);
     return `${baseUrl}?${usp.toString()}`;
 }
-export async function fetchQrcodeFromApi(baseUrl = 'https://qr-generator.dev/api/qrcode', options) {
+export async function fetchQrcodeFromApi(baseUrlOrUndefined, options) {
     const { value, size, margin, errorCorrectionLevel, colorMode, foregroundColor, backgroundColor, gradientStart, gradientEnd, gradientDirection, centerImageUrl, overlayBackground, overlayRadius, overlayScale, format = 'png', } = options;
     const params = { value, format };
     if (size)
@@ -35,7 +36,8 @@ export async function fetchQrcodeFromApi(baseUrl = 'https://qr-generator.dev/api
         params.overlayRadius = String(overlayRadius);
     if (overlayScale !== undefined)
         params.overlayScale = String(overlayScale);
-    const url = buildApiUrl(baseUrl, params);
+    const resolvedBase = (baseUrlOrUndefined ?? '').trim() || DEFAULT_API_URL;
+    const url = buildApiUrl(resolvedBase, params);
     const res = await fetch(url);
     if (!res.ok) {
         try {
