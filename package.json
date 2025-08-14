@@ -19,7 +19,6 @@
     "clean": "rm -rf node_modules apps/*/node_modules apps/*/packages/*/dist"
   },
   "devDependencies": {
-    "@types/node": "^20.19.10",
     "turbo": "^2.5.5",
     "typescript": "^5.9.2"
   },
