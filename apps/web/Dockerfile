@@ -2,8 +2,10 @@ FROM oven/bun:1 AS base
 
 FROM base AS builder
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libc6 \
+    && rm -rf /var/lib/apt/lists/*
 # Set working directory
 WORKDIR /app
 RUN bun install -g turbo
