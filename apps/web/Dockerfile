@@ -1,29 +1,25 @@
-FROM oven/bun:1 AS base
+FROM node:22-alpine AS base
 
 FROM base AS builder
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    libc6 \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update
+RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
-RUN bun install -g turbo
+RUN npm install -g pnpm turbo
 COPY . .
 RUN turbo prune @apps/web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    libc6 \
-    && rm -rf /var/lib/apt/lists/*
-RUN bun install -g turbo
+RUN apk update
+RUN apk add --no-cache libc6-compat
+RUN npm install -g pnpm turbo
 WORKDIR /app
 
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
-RUN bun install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Build the project
 COPY --from=builder /app/out/full/ .
@@ -31,7 +27,7 @@ COPY --from=builder /app/out/full/ .
 ARG TURBO_TOKEN
 ENV TURBO_TOKEN=$TURBO_TOKEN
 
-RUN turbo build
+RUN pnpm turbo build
 
 FROM base AS runner
 WORKDIR /app

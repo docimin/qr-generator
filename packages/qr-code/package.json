@@ -6,8 +6,8 @@
     },
     "description": "Local QR code generator with gradients and center-image overlays (Node)",
     "devDependencies": {
-        "typescript": "^5.9.2",
-        "@types/node": "^24"
+        "@types/node": "^24",
+        "@types/qrcode": "^1.5.5"
     },
     "exports": {
         ".": {
