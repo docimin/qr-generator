@@ -284,20 +284,8 @@ export default function QRGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <QrCode className="h-8 w-8 text-indigo-600" />
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-              QR Code Generator
-            </h1>
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            Create custom QR codes for text, links, emails, contacts, and more
-          </p>
-        </div>
-
         <div className="grid lg:grid-cols-2 gap-8">
           <Card>
             <CardHeader>

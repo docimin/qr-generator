@@ -12,6 +12,13 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function APITestPage() {
   const [getUrl, setGetUrl] = useState('https://example.com')
@@ -110,13 +117,13 @@ export default function APITestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             QR Code API Test
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-lg text-muted-foreground">
             Test the QR code generation API with different parameters
           </p>
         </div>
@@ -155,17 +162,20 @@ export default function APITestPage() {
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="get-color-mode">Color Mode</Label>
-                <select
-                  id="get-color-mode"
+                <Select
                   value={colorMode}
-                  onChange={(e) =>
-                    setColorMode(e.target.value as 'solid' | 'gradient')
+                  onValueChange={(value) =>
+                    setColorMode(value as 'solid' | 'gradient')
                   }
-                  className="w-full p-2 border rounded-md"
                 >
-                  <option value="solid">Solid</option>
-                  <option value="gradient">Gradient</option>
-                </select>
+                  <SelectTrigger className="w-full p-2 border rounded-md">
+                    <SelectValue placeholder="Select a color mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="solid">Solid</SelectItem>
+                    <SelectItem value="gradient">Gradient</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="get-fg">Foreground Color</Label>
@@ -275,20 +285,25 @@ export default function APITestPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="get-format">Format</Label>
-                <select
-                  id="get-format"
+                <Select
                   value={format}
-                  onChange={(e) => setFormat(e.target.value)}
-                  className="w-full p-2 border rounded-md"
+                  onValueChange={(value) =>
+                    setFormat(value as 'png' | 'blob' | 'svg')
+                  }
                 >
-                  <option value="png">PNG</option>
-                  <option value="blob">Blob</option>
-                  {svgAvailable && <option value="svg">SVG</option>}
-                </select>
+                  <SelectTrigger className="w-full p-2 border rounded-md">
+                    <SelectValue placeholder="Select a format" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="png">PNG</SelectItem>
+                    <SelectItem value="blob">Blob</SelectItem>
+                    {svgAvailable && <SelectItem value="svg">SVG</SelectItem>}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="get-ecl">Error Correction</Label>
-                <select
+                {/* <select
                   id="get-ecl"
                   value={errorCorrectionLevel}
                   onChange={(e) => setErrorCorrectionLevel(e.target.value)}
@@ -298,7 +313,21 @@ export default function APITestPage() {
                   <option value="M">M (Medium)</option>
                   <option value="Q">Q (Quartile)</option>
                   <option value="H">H (High)</option>
-                </select>
+                </select> */}
+                <Select
+                  value={errorCorrectionLevel}
+                  onValueChange={setErrorCorrectionLevel}
+                >
+                  <SelectTrigger className="w-full p-2 border rounded-md">
+                    <SelectValue placeholder="Select an error correction level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="L">L (Low)</SelectItem>
+                    <SelectItem value="M">M (Medium)</SelectItem>
+                    <SelectItem value="Q">Q (Quartile)</SelectItem>
+                    <SelectItem value="H">H (High)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="get-margin">Margin</Label>
@@ -351,7 +380,7 @@ export default function APITestPage() {
                           Copy SVG
                         </Button>
                       </div>
-                      <div className="border rounded-md p-4 bg-gray-50 max-h-96 overflow-auto">
+                      <div className="border rounded-md p-4 bg-gray-100 dark:bg-gray-800/70 max-h-96 overflow-auto">
                         <pre className="text-sm">{result}</pre>
                       </div>
                     </div>
@@ -369,7 +398,7 @@ export default function APITestPage() {
                           Copy Data URL
                         </Button>
                       </div>
-                      <div className="border rounded-md p-4 bg-gray-50 max-h-96 overflow-auto">
+                      <div className="border rounded-md p-4 bg-gray-100 dark:bg-gray-800/70 max-h-96 overflow-auto">
                         <pre className="text-xs break-all whitespace-pre-wrap">
                           {result}
                         </pre>
@@ -427,29 +456,29 @@ export default function APITestPage() {
           <CardContent className="space-y-4">
             <div>
               <h3 className="font-semibold mb-2">GET /api/qrcode</h3>
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-muted-foreground mb-2">
                 Generate QR codes using query parameters
               </p>
               <div className="space-y-2">
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   Basic (solid):
                   <br />
                   GET
                   /api/qrcode?value=Hello%20World&size=320&colorMode=solid&foregroundColor=%23000000&backgroundColor=%23FFFFFF&format=png
                 </div>
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   Gradient (PNG):
                   <br />
                   GET
                   /api/qrcode?value=Hello%20Gradient&size=512&colorMode=gradient&gradientStart=%231e40af&gradientEnd=%23ec4899&gradientDirection=diagonal-up&backgroundColor=%23FFFFFF&format=png
                 </div>
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   Center image overlay (PNG):
                   <br />
                   GET
                   /api/qrcode?value=With%20Logo&size=400&colorMode=solid&foregroundColor=%23000000&backgroundColor=%23FFFFFF&centerImageUrl=https%3A%2F%2Fexample.com%2Flogo.png&overlayBackground=%23FFFFFF&overlayRadius=12&overlayScale=0.26&format=png
                 </div>
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   SVG (no gradient/overlay):
                   <br />
                   GET
@@ -460,11 +489,11 @@ export default function APITestPage() {
 
             <div>
               <h3 className="font-semibold mb-2">POST /api/qrcode</h3>
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-muted-foreground mb-2">
                 Generate QR codes using JSON body
               </p>
               <div className="space-y-2">
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   Basic (solid):
                   <br />
                   POST /api/qrcode
@@ -485,7 +514,7 @@ export default function APITestPage() {
                     2
                   )}
                 </div>
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   Gradient (PNG):
                   <br />
                   POST /api/qrcode
@@ -508,7 +537,7 @@ export default function APITestPage() {
                     2
                   )}
                 </div>
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   Center image overlay (PNG):
                   <br />
                   POST /api/qrcode
@@ -533,7 +562,7 @@ export default function APITestPage() {
                     2
                   )}
                 </div>
-                <div className="bg-gray-100 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
+                <div className="bg-gray-100 dark:bg-gray-800/70 p-3 rounded text-sm font-mono whitespace-pre-wrap break-words">
                   SVG (no gradient/overlay):
                   <br />
                   POST /api/qrcode

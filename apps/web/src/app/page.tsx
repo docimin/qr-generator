@@ -7,13 +7,11 @@ import { Button } from '@/components/ui/button'
 export default function Page() {
   return (
     <div>
-      <div className="text-center mb-8">
+      <div className="text-center my-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-            QR Code Generator
-          </h1>
+          <h1 className="text-4xl font-bold">QR Code Generator</h1>
         </div>
-        <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
+        <p className="text-lg text-muted-foreground mb-4">
           Create custom QR codes for text, links, emails, contacts, and more
         </p>
         <Link href="/api-test">
