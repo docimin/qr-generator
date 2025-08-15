@@ -1,6 +1,10 @@
 import { Geist, Geist_Mono } from 'next/font/google'
+import Link from 'next/link'
 
 import type { Metadata } from 'next'
+
+import { Separator } from '@/components/ui/separator'
+
 import './globals.css'
 
 const geistSans = Geist({
@@ -28,6 +32,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="text-center py-4 text-sm text-gray-600">
+          Made with ❤️ by{' '}
+          <Link href="https://fayevr.dev" className="underline" target="_blank">
+            Faye
+          </Link>{' '}
+          - EU Hosted
+        </header>
+        <Separator className="mb-4" />
         {children}
       </body>
     </html>
