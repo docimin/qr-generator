@@ -33,6 +33,9 @@
     "main": "dist/cjs/index.js",
     "module": "dist/index.js",
     "name": "@qr-generator/qr-code",
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
         "prepublishOnly": "npm run build"
