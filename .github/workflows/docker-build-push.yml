@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: "App to build and push"
+        description: 'App to build and push'
         required: true
         type: choice
         options:
@@ -61,8 +61,8 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build \
-          -t ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:${{ steps.get_version.outputs.version }} \
-          -t ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:latest \
+          -t ${{ env.REGISTRY }}/fleet/qr-generator-dev:${{ steps.get_version.outputs.version }} \
+          -t ${{ env.REGISTRY }}/fleet/qr-generator-dev:latest \
           -f apps/${{ matrix.app }}/Dockerfile .
-          docker push ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:${{ steps.get_version.outputs.version }}
-          docker push ${{ env.REGISTRY }}/fleet/${{ matrix.app }}:latest
+          docker push ${{ env.REGISTRY }}/fleet/qr-generator-dev:${{ steps.get_version.outputs.version }}
+          docker push ${{ env.REGISTRY }}/fleet/qr-generator-dev:latest
