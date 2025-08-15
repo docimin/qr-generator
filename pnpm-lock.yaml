@@ -20,7 +20,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@qr-generator/qr-code':
+      '@fayevr/qr-code':
         specifier: workspace:*
         version: link:../../packages/qr-code
       '@radix-ui/react-checkbox':

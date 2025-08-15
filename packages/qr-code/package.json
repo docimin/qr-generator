@@ -32,7 +32,7 @@
     "license": "MIT",
     "main": "dist/cjs/index.js",
     "module": "dist/index.js",
-    "name": "@qr-generator/qr-code",
+    "name": "@fayevr/qr-code",
     "publishConfig": {
         "access": "public"
     },

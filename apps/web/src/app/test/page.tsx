@@ -1,6 +1,6 @@
 'use client'
 
-import { fetchQrcodeFromApi } from '@qr-generator/qr-code/browser'
+import { fetchQrcodeFromApi } from '@fayevr/qr-code/browser'
 import { useState } from 'react'
 
 export default function TestPage() {
@@ -41,9 +41,8 @@ export default function TestPage() {
         Test QR Page
       </h1>
       <p style={{ marginBottom: 12 }}>
-        This page uses the local package{' '}
-        <code>@qr-generator/qr-code/browser</code> to call the server endpoint
-        and render a PNG QR.
+        This page uses the local package <code>@fayevr/qr-code/browser</code> to
+        call the server endpoint and render a PNG QR.
       </p>
       <div
         style={{
